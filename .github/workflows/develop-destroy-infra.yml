@@ -38,13 +38,14 @@ jobs:
         run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME
       - name: Destroy Istio
         run: |
+          helm -n istio-ingress uninstall public-argo-istio-ingress
           helm -n istio-ingress uninstall public-app-istio-ingress
           helm -n istio-system uninstall istiod
           helm -n istio-system uninstall istio-base
 
 
   destroy_public_lb_aws_parameterstore:
-    name: "Delete AWS ParameterStore with the public AWS LB dns name"
+    name: "Delete AWS ParameterStores with the public AWS LB dns name"
     runs-on: ubuntu-latest
     #environment: $ENVIRONMENT
     steps:
