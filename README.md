@@ -10,11 +10,16 @@ Demo that does the following:
   
 ![image workflow](./images/workflow.jpg)
 
-# Repos used
+# Prerequisites
 
 - Terraform infra.tfvars per environment: https://github.com/luisllm/environments.git
 
 - Helm charts and custom values files: https://github.com/luisllm/demo-argocd-datree-config.git
+This is the config repo that ArgoCD will watch to deploy and update the apps
+
+- Github Personal Access token to be able to push changes to the previous repo where the helm charts and values files are located
+
+![image github_pat](./images/github_pat.jpg)
 
 
 # References
