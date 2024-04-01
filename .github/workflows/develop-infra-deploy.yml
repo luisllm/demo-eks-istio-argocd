@@ -31,7 +31,6 @@ env:
   EKS_CLUSTER_NAME: develop-eks-cluster
   AWS_LOAD_BALANCER_CONTROLLER_CHART_VERSION: "1.7.2"
   ISTIO_CHART_VERSION: "1.20.0"
-  PODINFO_CHART_VERSION: "6.6.1"
 
 jobs:
   # Deploy the VPC and the EKS cluster
@@ -331,12 +330,12 @@ jobs:
 
       - name: Create ArgoCD Project and Applications
         run: |
-          kubectl apply -f argocd-project.yaml
+          kubectl apply -f argocd-ecommerce-project.yaml
           kubectl apply -f argocd-products-app.yaml
           kubectl apply -f argocd-orders-app.yaml
           kubectl apply -f argocd-graphql-app.yaml
-
-
+          kubectl apply -f argocd-podinfo-project.yaml
+          kubectl apply -f argocd-podinfo-app.yaml
 
 
   # Store in AWS ParameterStore the public LB dns name created automatically when the Istio ingress gateway was deployed. It will be used to send requests
