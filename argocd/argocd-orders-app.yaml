@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: orders
+  namespace: argocd
+spec:
+  project: ecommerce-platform
+  source:
+    repoURL: https://github.com/luisllm/demo-argocd-datree-config.git
+    targetRevision: HEAD
+    path: "application-charts/orders"
+    helm:
+      valueFiles: ['values-dev.yaml'] # resolved against source.repoURL and source.path
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ecommerce
+  syncPolicy:
+    automated:
+      selfHeal: true
