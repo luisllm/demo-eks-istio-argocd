@@ -1,3 +1,23 @@
+#apiVersion: argoproj.io/v1alpha1
+#kind: Application
+#metadata:
+#  name: podinfo
+#  namespace: argocd
+#spec:
+#  project: podinfo-project
+#  source:
+#    repoURL: https://github.com/luisllm/demo-argocd-datree-config.git
+#    targetRevision: HEAD
+#    path: "application-charts/podinfo"
+#    helm:
+#      valueFiles: ['values-dev.yaml'] # resolved against source.repoURL and source.path
+#  destination:
+#    server: https://kubernetes.default.svc
+#    namespace: demo
+#  syncPolicy:
+#    automated:
+#      selfHeal: true
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -5,12 +25,16 @@ metadata:
   namespace: argocd
 spec:
   project: podinfo-project
-  source:
-    repoURL: https://github.com/luisllm/demo-argocd-datree-config.git
-    targetRevision: HEAD
-    path: "application-charts/podinfo"
-    helm:
-      valueFiles: ['values-dev.yaml'] # resolved against source.repoURL and source.path
+  sources:
+    - repoURL: https://github.com/luisllm/demo-helm-charts.git
+      chart: podinfo
+      targetRevision: HEAD
+      helm:
+        valueFiles:
+          - $values/envs/develop/podinfo-values.yaml
+    - repoURL: https://github.com/luisllm/demo-argocd-datree-config.git
+      targetRevision: HEAD
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: demo
