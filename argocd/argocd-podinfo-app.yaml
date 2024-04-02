@@ -31,10 +31,10 @@ spec:
       targetRevision: HEAD
       helm:
         valueFiles:
-          - $values/envs/develop/podinfo-values.yaml
+          - $repo-1/envs/develop/podinfo-values.yaml
     - repoURL: https://github.com/luisllm/demo-argocd-datree-config.git
       targetRevision: HEAD
-      ref: values
+      ref: repo-1
   destination:
     server: https://kubernetes.default.svc
     namespace: demo
