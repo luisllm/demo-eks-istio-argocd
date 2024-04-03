@@ -39,8 +39,8 @@ spec:
       targetRevision: HEAD
       helm:
         valueFiles:
-          - $repo-1/envs/ENVIRONMENT_CHANGEME/podinfo-values.yaml
-          - $repo-1/envs/ENVIRONMENT_CHANGEME/podinfo-version.yaml
+          - $repo-1/podinfo/envs/ENVIRONMENT_CHANGEME/values.yaml
+          - $repo-1/podinfo/envs/ENVIRONMENT_CHANGEME/version.yaml
     - repoURL: https://github.com/luisllm/demo-argocd-datree-config.git
       targetRevision: HEAD
       ref: repo-1

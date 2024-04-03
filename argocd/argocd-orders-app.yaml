@@ -42,8 +42,8 @@ spec:
       targetRevision: HEAD
       helm:
         valueFiles:
-          - $repo-1/envs/ENVIRONMENT_CHANGEME/orders-values.yaml
-          - $repo-1/envs/ENVIRONMENT_CHANGEME/orders-version.yaml
+          - $repo-1/orders/envs/ENVIRONMENT_CHANGEME/values.yaml
+          - $repo-1/orders/envs/ENVIRONMENT_CHANGEME/version.yaml
     - repoURL: https://github.com/luisllm/demo-argocd-datree-config.git
       targetRevision: HEAD
       ref: repo-1
