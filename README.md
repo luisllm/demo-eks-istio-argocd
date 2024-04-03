@@ -12,6 +12,8 @@ Demo that does the following:
 
 # Prerequisites
 
+- S3 bucket in the Account and Region where you are deploying: <environment>-test-llm-terraform-state
+  
 - Terraform infra.tfvars per environment: https://github.com/luisllm/environments.git
 
 - Helm charts and custom values files: https://github.com/luisllm/demo-argocd-datree-config.git
