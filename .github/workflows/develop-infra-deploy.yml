@@ -323,10 +323,12 @@ jobs:
       - name: Update kube config
         run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME
 
-      - name: Create ecommerge namespace and ArgoCD products app
+      - name: Create ecommerge and demo namespaces
         run: |
           kubectl get namespace | grep -q "^ecommerce" || kubectl create namespace ecommerce
           kubectl label ns ecommerce istio-injection=enabled
+          kubectl get namespace | grep -q "^demo" || kubectl create namespace demo
+          kubectl label ns demo istio-injection=enabled
 
       - name: Create ArgoCD Project and Applications
         run: |
