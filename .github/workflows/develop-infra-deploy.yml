@@ -331,16 +331,22 @@ jobs:
           kubectl label ns demo istio-injection=enabled
 
       - name: Customize ArgoCD app with environment
-        run: |       
+        run: |   
+          sed "s|ENVIRONMENT_CHANGEME|$ENVIRONMENT|g" argocd-products-app.yaml > argocd-products-app-replaced.yaml
+          cat argocd-products-app-replaced.yaml
+          sed "s|ENVIRONMENT_CHANGEME|$ENVIRONMENT|g" argocd-orders-app.yaml > argocd-orders-app-replaced.yaml
+          cat argocd-orders-app-replaced.yaml
+          sed "s|ENVIRONMENT_CHANGEME|$ENVIRONMENT|g" argocd-graphql-app.yaml > argocd-graphql-app-replaced.yaml
+          cat argocd-graphql-app-replaced.yaml    
           sed "s|ENVIRONMENT_CHANGEME|$ENVIRONMENT|g" argocd-podinfo-app.yaml > argocd-podinfo-app-replaced.yaml
           cat argocd-podinfo-app-replaced.yaml
 
       - name: Create ArgoCD Project and Applications
         run: |
           kubectl apply -f argocd-ecommerce-project.yaml
-          kubectl apply -f argocd-products-app.yaml
-          kubectl apply -f argocd-orders-app.yaml
-          kubectl apply -f argocd-graphql-app.yaml
+          kubectl apply -f argocd-products-app-replaced.yaml
+          kubectl apply -f argocd-orders-app-replaced.yaml
+          kubectl apply -f argocd-graphql-app-replaced.yaml
           kubectl apply -f argocd-podinfo-project.yaml
           kubectl apply -f argocd-podinfo-app-replaced.yaml
 
