@@ -330,6 +330,11 @@ jobs:
           kubectl get namespace | grep -q "^demo" || kubectl create namespace demo
           kubectl label ns demo istio-injection=enabled
 
+      - name: Customize ArgoCD app with environment
+        run: |       
+          sed "s|ENVIRONMENT_CHANGEME|$ENVIRONMENT|g" argocd-podinfo-app.yaml > argocd-podinfo-app-replaced.yaml
+          cat argocd-podinfo-app-replaced.yaml
+
       - name: Create ArgoCD Project and Applications
         run: |
           kubectl apply -f argocd-ecommerce-project.yaml
@@ -337,7 +342,7 @@ jobs:
           kubectl apply -f argocd-orders-app.yaml
           kubectl apply -f argocd-graphql-app.yaml
           kubectl apply -f argocd-podinfo-project.yaml
-          kubectl apply -f argocd-podinfo-app.yaml
+          kubectl apply -f argocd-podinfo-app-replaced.yaml
 
 
   # Store in AWS ParameterStore the public LB dns name created automatically when the Istio ingress gateway was deployed. It will be used to send requests

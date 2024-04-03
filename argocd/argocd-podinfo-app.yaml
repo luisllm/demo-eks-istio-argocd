@@ -1,3 +1,4 @@
+## CHART AND VALUES FILES IN THE SAME REPO
 #apiVersion: argoproj.io/v1alpha1
 #kind: Application
 #metadata:
@@ -19,6 +20,7 @@
 #      selfHeal: true
 
 
+## CHART IN ONE REPO AND VALUES FILE/S IN ANOTHER REPO
 # https://codefresh.io/blog/how-to-model-your-gitops-environments-and-promote-releases-between-them/
 # https://github.com/argoproj/argo-cd/issues/2789
 # https://stackoverflow.com/questions/65897034/argocd-helm-chart-repository-not-accessible?rq=3
@@ -37,8 +39,8 @@ spec:
       targetRevision: HEAD
       helm:
         valueFiles:
-          - $repo-1/envs/develop/podinfo-values.yaml
-          - $repo-1/envs/develop/podinfo-version.yaml
+          - $repo-1/envs/ENVIRONMENT_CHANGEME/podinfo-values.yaml
+          - $repo-1/envs/ENVIRONMENT_CHANGEME/podinfo-version.yaml
     - repoURL: https://github.com/luisllm/demo-argocd-datree-config.git
       targetRevision: HEAD
       ref: repo-1
