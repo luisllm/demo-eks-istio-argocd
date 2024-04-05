@@ -292,7 +292,7 @@ jobs:
       - name: Expose ArgoCD UI via the AWS public NLB and the public Istio IG 
         run: |
           kubectl apply -f argo-istio-gateway.yaml
-          kubectl apply -f argo-istio-vs.yaml
+          kubectl apply -f argo-istio-virtualservice.yaml
 
       - name: ArgoCD admin password
         run: |
@@ -351,6 +351,79 @@ jobs:
           kubectl apply -f argocd-podinfo-app-replaced.yaml
 
 
+
+
+
+  # Deploy Prometheus and Grafana
+  deploy_monitoring:
+    name: "Deploy monitoring - Prometheus, Grafana and Kiali"
+    runs-on: ubuntu-latest
+    #environment: $ENVIRONMENT
+    needs: [deploy_vpc_and_eks, aws_load_balancer_controller_deployment, istio_deployment, argocd_deployment, argocd_project_and_apps_deployment]
+    defaults:
+      run:
+        # In here I have a custom values file for prometheus and grafana, where I customized some grafana dashboards
+        working-directory: monitoring
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"
+
+      - name: Update kube config
+        run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME
+
+      - name: Create monitoring namespace
+        run: |
+          kubectl get namespace | grep -q "^monitoring" || kubectl create namespace monitoring  
+
+      # Using a custom values to introduce some custom Grafana dashboards
+      - name: Deploy Prometheus and Grafana with Helm
+        run: |
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+          helm upgrade --install "mon" \
+            prometheus-community/kube-prometheus-stack \
+            --version $KUBE_PROMETHEUS_STACK_CHART_VERSION \
+            --namespace monitoring \
+            --values custom-prometheus-grafana-values.yaml
+
+      # https://tetrate.io/blog/how-to-configure-prometheus-operator-scrape-metrics-from-istio-1-6/
+      # Create the Service Monitors to have Prometheus scraping Istio metrics
+      - name: Create ServiceMonitors Prometheus/Istio
+        run: |
+          kubectl apply -f service-monitor-istio-control.yaml
+          kubectl apply -f service-monitor-istio-data.yaml
+
+      # https://kiali.io/docs/installation/installation-guide/install-with-helm/
+      # https://stackoverflow.com/questions/63372998/how-to-install-kiali-dashboard-with-prometheus-in-place-in-gke-with-default-isti
+      - name: Deploy Kiali with Helm
+        run: |
+          helm repo add kiali https://kiali.org/helm-charts
+          helm repo update
+          helm upgrade --install kiali-operator \
+            kiali/kiali-operator \
+            --set cr.create=true \
+            --set cr.namespace=monitoring \
+            --set cr.spec.auth.strategy="anonymous" \
+            --namespace kiali-operator \
+            --create-namespace \
+            --values custom-kiali-values.yaml
+
+      # Expose Kiali via the Istio IG dedicated to the UIs
+      - name: Expose Kiali via Istio IG
+        run: |
+          kubectl apply -f kiali-istio-gateway.yaml 
+          kubectl apply -f kiali-istio-virtualservice.yaml
+
+
+
+
   # Store in AWS ParameterStore the public LB dns name created automatically when the Istio ingress gateway was deployed. It will be used to send requests
   public_ingress_lb_discovery:
     name: "Store ingress AWS public LB dns name in AWS ParameterStore"
@@ -404,7 +477,7 @@ jobs:
     name: "Tests"
     runs-on: ubuntu-latest
     #environment: $ENVIRONMENT
-    needs: [argocd_project_and_apps_deployment, public_ingress_lb_discovery]
+    needs: [argocd_project_and_apps_deployment, deploy_monitoring, public_ingress_lb_discovery]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
