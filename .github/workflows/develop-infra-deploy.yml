@@ -31,6 +31,8 @@ env:
   EKS_CLUSTER_NAME: develop-eks-cluster
   AWS_LOAD_BALANCER_CONTROLLER_CHART_VERSION: "1.7.2"
   ISTIO_CHART_VERSION: "1.20.0"
+  # https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack
+  KUBE_PROMETHEUS_STACK_CHART_VERSION: "56.21.2"
 
 jobs:
   # Deploy the VPC and the EKS cluster
